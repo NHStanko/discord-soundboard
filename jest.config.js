@@ -1,10 +1,11 @@
-export default {
+module.export = {
   preset: 'ts-jest/presets/js-with-ts',
   testEnvironment: 'node',
   extensionsToTreatAsEsm: ['.ts'],
   globals: {
     'ts-jest': {
       useESM: true,
+      tsConfig: './tsconfig.json'
     },
   },
   moduleNameMapper: {
