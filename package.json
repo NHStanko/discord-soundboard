@@ -37,6 +37,11 @@
   "author": "Nick Stanko",
   "license": "MIT",
   "dependencies": {
+    "@discordjs/builders": "^0.12.0",
+    "@discordjs/rest": "^0.3.0",
+    "discord-api-types": "^0.29.0",
+    "discord.js": "^13.6.0",
+    "dotenv": "^16.0.0",
     "tslib": "~2.3.1"
   },
   "volta": {
