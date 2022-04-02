@@ -4,6 +4,7 @@ import {Client, Collection, Intents} from 'discord.js';
 //Importing command and event imports
 import * as commandImports from './commands';
 import * as eventImports from './events';
+import { Command } from './helpers/command';
 // Creating a new client
 const client = new Client({
     intents: [
@@ -16,8 +17,8 @@ const client = new Client({
 // Loading in the command list
 // commandList is a JSON array of commands for registration
 // commandCollection is a discord.js Collection of commands for interactionCreate
-let commandList = [];
-let commandCollection = new Collection();
+const commandList = [];
+const commandCollection = new Collection<string,Command>();
 for (const command of Object.values(commandImports)) {
     commandList.push(command.data.toJSON());
     commandCollection.set(command.data.name, command);

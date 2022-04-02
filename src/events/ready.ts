@@ -20,7 +20,7 @@ export const ready: Event = {
         (async () => {
             try{
                 // production enviroments to only one server roll out instantly
-                if(process.env.ENV === "production"){
+                if(process.env.NODE_ENV === "production"){
                     await rest.put(Routes.applicationCommands(CLIENT_ID), {
                         body: commandList
                     });
