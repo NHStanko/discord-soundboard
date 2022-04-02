@@ -16,4 +16,4 @@ FROM base as production
 ENV NODE_PATH=./build
 ENV NODE_ENV=production
 
-RUN npm run start
+CMD npm run start
