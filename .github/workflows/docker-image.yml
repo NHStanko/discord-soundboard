@@ -1,14 +1,15 @@
 name: Docker Image CI
 
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+  workflow_dispatch:
+#  push:
+#    branches: [ master ]
+#  pull_request:
+#    branches: [ master ]
 
 env:
-  GUILD_ID: ${{secrets.GUILD_ID}}
-  BOT_TOKEN: ${{secrets.BOT_TOKEN}}
+  GUILD_ID: ${{ secrets.GUILD_ID }}
+  BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
   NODE_ENV: development
 
 jobs:
