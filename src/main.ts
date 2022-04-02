@@ -1,4 +1,3 @@
-
 require('dotenv').config();
 import {Client, Collection, Intents} from 'discord.js';
 //Importing command and event imports
