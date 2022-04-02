@@ -6,7 +6,7 @@ on:
 #    branches: [ master ]
 #  pull_request:
 #    branches: [ master ]
-
+ 
 env:
   GUILD_ID: ${{ secrets.GUILD_ID }}
   BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
