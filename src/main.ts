@@ -14,6 +14,7 @@ const client = new Client({
 });
 
 
+
 // Loading in the command list
 // commandList is a JSON array of commands for registration
 // commandCollection is a discord.js Collection of commands for interactionCreate
@@ -32,6 +33,18 @@ for (const event of Object.values(eventImports)) {
     }else{
         client.on(event.name, (...args) => event.execute(commandList, commandCollection, ...args));
     }
+}
+
+// Checking if the token is set
+if(!process.env.TOKEN){
+    console.error("No token found, please set TOKEN in .env");
+    process.exit(1);
+}
+
+// Checking if development mode is set and no GUILD_ID is set
+if(process.env.NODE_ENV=='development' && !process.env.GUILD_ID){
+    console.error("Development mode is set but no GUILD_ID is set, please set GUILD_ID in .env");
+    process.exit(1);
 }
 
 // Logging in
