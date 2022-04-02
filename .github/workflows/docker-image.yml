@@ -9,10 +9,14 @@ on:
 jobs:
 
   build:
-
     runs-on: ubuntu-latest
-
     steps:
+    - name: Create .env file
+    - run: |
+        touch .env
+        echo BOT_TOKEN=${{secret.BOT_TOKEN}}
+        echo GUILD_ID=${{secret.GUILD_ID}}
+        echo NODE_ENV=development
     - uses: actions/checkout@v3
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
