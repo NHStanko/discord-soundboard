@@ -1,8 +1,9 @@
-// Adding in requirements
-require('dotenv').config();
-const fs = require('fs');
-const { Client, Collection, Intents } = require('discord.js');
 
+require('dotenv').config();
+import {Client, Collection, Intents} from 'discord.js';
+//Importing command and event imports
+import * as commandImports from './commands';
+import * as eventImports from './events';
 // Creating a new client
 const client = new Client({
     intents: [
@@ -12,51 +13,25 @@ const client = new Client({
 });
 
 
-fs.readdir(__dirname, function (err, files) {
-    //handling error
-    if (err) {
-        return console.log('Unable to scan directory: ' + err);
-    } 
-    //listing all files using forEach
-    files.forEach(function (file) {
-        // Do whatever you want to do with the file
-        console.log(file); 
-    });
-});
-
-
-// Loading in the command files
-const commandFiles = fs
-    .readdirSync('src/commands')
-    .filter(file => file.endsWith('.ts'));
-
-// Create new collection for commands
-const commands = [];
-client.commands = new Collection();
-
-// Import commands into collection
-for(const file of commandFiles) {
-    const command = require(`src/commands/${file}`);
-    commandFiles.push(command.data.toJSON());
-    client.commands.set(command.data.name, command);
+// Loading in the command list
+// commandList is a JSON array of commands for registration
+// commandCollection is a discord.js Collection of commands for interactionCreate
+let commandList = [];
+let commandCollection = new Collection();
+for (const command of Object.values(commandImports)) {
+    commandList.push(command.data.toJSON());
+    commandCollection.set(command.data.name, command);
 }
 
-// Loading in the events files
-const eventFiles = fs
-    .readdirSync('events')
-    .filter(file => file.endsWith('.js'));
-
-// Import events into collection
-for(const file of eventFiles){
-    const event = require(`./events/${file.replace('.ts', '.js')}`);
+// Loading the events
+for (const event of Object.values(eventImports)) {
+    // Seperating events that should only be called once from those that should be called every time
     if(event.once){
-        client.once(event.name, (...args) => event.execute(...args, commands));
+        client.once(event.name, (...args) => event.execute(commandList, commandCollection, ...args));
     }else{
-        client.on(event.name, (...args) => event.execute(...args, commands));
+        client.on(event.name, (...args) => event.execute(commandList, commandCollection, ...args));
     }
 }
 
-
+// Logging in
 client.login(process.env.BOT_TOKEN);
-
-
