@@ -1,3 +1,3 @@
 // Exporting modules
-export {ready} from "./ready";
-export {interactionCreate} from "./interaction_create";
+export { ready } from "./ready";
+export { interactionCreate } from "./interaction_create";

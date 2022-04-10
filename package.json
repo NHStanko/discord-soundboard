@@ -1,29 +1,31 @@
 {
   "name": "discord-soundbot",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Soundboard bot for discord",
   "author": "Nick Stanko",
   "license": "ISC",
   "engines": {
-    "node": ">= 17"
+    "node": ">= 16.9.0"
   },
   "scripts": {
     "start": "node build/src/main.js",
-    "clean": "rimraf coverage build tmp node_modules",
-    "prebuild": "npm run lint",
+    "clean": "rm -rf coverage build node_modules",
+    "prebuild": "npm install && npm run lint && npm run format",
     "build": "tsc -p tsconfig.json",
     "build:watch": "tsc -w -p tsconfig.json",
     "build:release": "npm run clean && tsc -p tsconfig.release.json",
-    "lint": "eslint . --ext .ts",
+    "postbuild": "npm run test",
+    "lint": "eslint --ext .ts .",
+    "format": "prettier --ignore-path .eslintignore --write \"**/*.+(js|ts|json)\"",
     "test": "jest --coverage",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "release": "npm run build"
   },
   "dependencies": {
     "@discordjs/builders": "^0.12.0",
     "@discordjs/rest": "^0.3.0",
-    "@types/pino": "^7.0.5",
     "config": "^3.3.7",
-    "discord-api-types": "^0.29.0",
+    "discord-api-types": "^0.31.0",
     "discord.js": "^13.6.0",
     "dotenv": "^16.0.0",
     "pino": "^7.9.2",
@@ -31,22 +33,21 @@
   },
   "devDependencies": {
     "@actions/core": "^1.6.0",
-    "@types/jest": "~27.4",
-    "@types/node": "~16.11",
-    "@typescript-eslint/eslint-plugin": "~5.14",
-    "@typescript-eslint/parser": "~5.14",
+    "@types/jest": "^27.4.1",
+    "@types/node": "^17.0.23",
+    "@typescript-eslint/eslint-plugin": "^5.18.0",
+    "@typescript-eslint/parser": "^5.18.0",
     "babel-jest": "^27.5.1",
-    "eslint": "~8.11",
-    "eslint-config-prettier": "~8.5",
-    "eslint-plugin-jest": "~26.1",
-    "jest": "~27.5",
+    "eslint": "^8.13.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-jest": "^26.1.4",
+    "jest": "^27.5.1",
     "nodemon": "^2.0.15",
-    "prettier": "~2.5",
-    "rimraf": "~3.0",
-    "ts-jest": "~27.1",
+    "prettier": "^2.6.2",
+    "ts-jest": "^27.1.4",
     "ts-node": "^10.7.0",
-    "tsutils": "~3.21",
-    "typescript": "~4.6"
+    "tsutils": "^3.21.0",
+    "typescript": "^4.6.3"
   },
   "volta": {
     "node": "17.7.2"
