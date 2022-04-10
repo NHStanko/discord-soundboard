@@ -1,0 +1,7 @@
+{
+    "TOKEN": "",
+    "NODE_ENV": "development",
+    "GUILD_ID": "",
+    "LOGGING_LEVEL": "debug",
+    "LOG_DIR": "./logs"
+}
