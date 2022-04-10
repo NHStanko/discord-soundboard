@@ -3,7 +3,7 @@ import { Event } from "../helpers/event";
 
 export const interactionCreate: Event = {
     name: "interactionCreate",
-    once: true,
+    once: false,
     async execute(_commands, commandCollection, interaction) {
         if(!interaction.isCommand()){
             logger.trace(`Non-command interaction detected: ${interaction.message}`);
