@@ -55,3 +55,4 @@ try{
     logger.fatal(`Error encountered at login: ${e}`);
 }
 
+export { client };
