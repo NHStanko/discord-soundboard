@@ -1,1 +1,6 @@
 /**/*.js
+.github/
+build/
+coverage/
+logs/
+node_modules/

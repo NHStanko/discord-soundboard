@@ -23,5 +23,5 @@
     "target": "ES2021",
     "lib": ["ESNext"]
   },
-  "include": ["src/**/*", "__tests__/**/*", "src/config/*.ts"]
+  "include": ["src/**/*", "src/config/*.ts", "jest.config.ts"]
 }

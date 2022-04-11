@@ -1,18 +1,41 @@
+import fs from "fs";
 import pino from "pino";
-import { config } from "./config";
-import * as fs from "fs";
 import PinoPretty from "pino-pretty";
+import { config } from "./config";
+
+const logLevel: pino.Level =
+  config.LOGGING_LEVEL === "trace"
+    ? "trace"
+    : config.LOGGING_LEVEL === "debug"
+    ? "debug"
+    : config.LOGGING_LEVEL === "warn"
+    ? "warn"
+    : config.LOGGING_LEVEL === "error"
+    ? "error"
+    : config.LOGGING_LEVEL === "fatal"
+    ? "fatal"
+    : "info";
 
 const streams = [
-  { stream: PinoPretty({ colorize: true }), level: config.LOGGING_LEVEL },
+  {
+    stream: PinoPretty({ colorize: true }),
+    level: logLevel,
+  },
   {
     stream: fs.createWriteStream(`${config.LOG_DIR}/discord-bot.log`),
-    level: config.LOGGING_LEVEL,
+    level: logLevel,
+    transport: {
+      target: "pino-pretty",
+      options: {
+        colorize: true,
+      },
+    },
   },
 ];
-export const logger = pino(
+
+export const log = pino(
   {
-    level: config.LOGGING_LEVEL,
+    level: logLevel,
     name: "discord-bot",
   },
   pino.multistream(streams)

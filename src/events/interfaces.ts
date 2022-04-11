@@ -1,5 +1,6 @@
 import { Collection } from "discord.js";
-import { Command } from "./command";
+import { Command } from "../commands/interfaces";
+
 export interface Event {
   // Name of the event, list of events can be seen here
   // https://discord.js.org/#/docs/main/stable/class/Client?scrollTo=e-apiRequest

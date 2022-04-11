@@ -1,11 +1,7 @@
-import pino from "pino";
-
 export interface ConfigInterface {
-  LOGGING_LEVEL: pino.Level;
+  LOGGING_LEVEL: string;
   LOG_DIR: string;
-  ENV: {
-    TOKEN: string;
-    GUILD_ID: string;
-    NODE_ENV: string;
-  };
+  TOKEN: string;
+  GUILD_ID: string;
+  NODE_ENV: string;
 }

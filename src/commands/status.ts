@@ -2,9 +2,9 @@ import {
   SlashCommandBuilder,
   SlashCommandStringOption,
 } from "@discordjs/builders";
-import { Command } from "../helpers/command";
+import { Command } from "./interfaces";
 import { client } from "../main";
-import { logger } from "../utils/logger";
+import { log } from "../utils/logger";
 
 // Create an instance of the command using the Command Interface
 export const status: Command = {
@@ -36,12 +36,12 @@ export const status: Command = {
         type: interaction.options.getString("type"),
         url: interaction.options.getString("url"),
       });
-      logger.debug(output);
+      log.debug(output);
     } catch (e) {
-      if (e)
-        logger.error(
-          `Error encountered at command execution:${interaction.commandName} - ${interaction.message} - ${e}`
-        );
+      log.error(
+        e,
+        `Error encountered at command execution: ${interaction.commandName} - ${interaction.message}`
+      );
     }
 
     interaction.reply({
