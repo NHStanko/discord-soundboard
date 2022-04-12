@@ -1,68 +1,81 @@
+import { Command } from "./commands/interfaces";
+import config from "./config";
+import log from "./log";
 import { Client, Collection, Intents } from "discord.js";
-import * as commands from "./commands";
-import { Command } from "./commands";
-import * as events from "./events";
-import { config } from "./utils/config";
-import { log } from "./utils/logger";
+import fs from "fs";
+import path from "path";
 
-export const client: Client = new Client({
+interface ClientWithCommands extends Client {
+  commands?: Collection<string, Command>;
+}
+
+const client: ClientWithCommands = new Client({
   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
 });
 
-async function main() {
-  // Creating a new client
-  log.info("Starting up...");
+export default client;
 
-  // Loading in the command list
-  // commandList is a JSON array of commands for registration
-  // commandCollection is a discord.js Collection of commands for interactionCreate
-  log.debug("Registering commands...");
-  const commandList = [];
-  const commandCollection = new Collection<string, Command>();
-  for (const command of Object.values(commands)) {
-    log.trace(`Registering command: ${command.name}`);
-    commandList.push(command.data.toJSON());
-    commandCollection.set(command.data.name, command);
+/**
+ * Perform the login step for the bot.
+ */
+async function login(): Promise<void> {
+  if (config.TOKEN === undefined || config.TOKEN === "") {
+    log.fatal("No token provided");
   }
 
-  // Loading the events
-  for (const event of Object.values(events)) {
-    log.trace(`Registering event: ${event.name}`);
-    // Seperating events that should only be called once from those that should be called every time
+  await client
+    .login(config.TOKEN)
+    .catch((e) => {
+      log.fatal(e, "Error encountered during login");
+    })
+    .then(() => {
+      log.debug("Login successful!");
+    });
+}
+
+/**
+ * Runs the bot.
+ */
+async function main(): Promise<void> {
+  // Set client commands
+  client.commands = new Collection();
+  const commandFiles = fs
+    .readdirSync(path.resolve("src/commands"))
+    .filter((file) => !file.endsWith("interfaces.ts"));
+
+  for (const file of commandFiles) {
+    log.trace(`Parsing command in ${file}`);
+    // Note: the exported command MUST be named 'command'
+    // TODO figure out how prevent this requirement
+    const { command } = await import(`./commands/${file}`);
+    log.trace(command, "Setting command");
+    client.commands.set(command.name, command);
+  }
+
+  // Register event listeners in the client
+  const eventFiles = fs
+    .readdirSync(path.resolve("src/events"))
+    .filter((file) => !file.endsWith("interfaces.ts"));
+
+  for (const file of eventFiles) {
+    log.trace(`Parsing event in ${file}`);
+    // Note: the exported event MUST be named 'event'
+    const { event } = await import(`./events/${file}`);
+    log.trace(event, "Registering events");
     if (event.once) {
-      client.once(event.name, (...args) =>
-        event.execute(commandList, commandCollection, ...args)
-      );
+      client.once(event.name, (...args) => event.execute(...args));
     } else {
-      client.on(event.name, (...args) =>
-        event.execute(commandList, commandCollection, ...args)
-      );
+      client.on(event.name, (...args) => event.execute(...args));
     }
   }
 
-  // Logging in
-  // Check if token is valid
-  if (!config.TOKEN) {
-    log.error(new Error("Token is not valid!"));
-    process.exit(1);
-  }
-
-  try {
-    await client.login(config.TOKEN).then(
-      () => {
-        log.debug("Logged in!");
-      },
-      () => {
-        log.fatal("Failed to log in");
-      }
-    );
-    client.once("ready", () => {
-      log.info("Running");
-    });
-  } catch (e) {
-    log.fatal(e, "Error encountered at login");
-  }
+  await login();
 }
 
-// TODO: Add event listener to call client.destroy() when shutting down
+process.on("SIGTERM", () => {
+  log.trace("Received SIGTERM");
+  log.info("Stopping bot");
+  client.destroy();
+});
+
 main();

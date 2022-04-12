@@ -1,9 +1,7 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
 import { Command } from "./interfaces";
+import { SlashCommandBuilder } from "@discordjs/builders";
 
-// Create an instance of the command using the Command Interface
-export const ping: Command = {
-  // Execute happens on the command
+export const command: Command = {
   name: "ping",
   execute: async (interaction) => {
     interaction.reply({
@@ -11,6 +9,5 @@ export const ping: Command = {
       ephemeral: true,
     });
   },
-  // Slash command builder contains the command name and description
   data: new SlashCommandBuilder().setName("ping").setDescription("pong"),
 };

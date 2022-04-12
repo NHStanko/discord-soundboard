@@ -1,29 +1,35 @@
+import log from "../log";
+import client from "../main";
+import { Command } from "./interfaces";
 import {
   SlashCommandBuilder,
   SlashCommandStringOption,
 } from "@discordjs/builders";
-import { Command } from "./interfaces";
-import { client } from "../main";
-import { log } from "../utils/logger";
+import { ExcludeEnum } from "discord.js";
+import { ActivityTypes } from "discord.js/typings/enums";
 
-// Create an instance of the command using the Command Interface
-export const status: Command = {
-  // Execute happens on the command
+export const command: Command = {
   name: "status",
   execute: async (interaction) => {
-    // Check if url string is youtube or twitch link
+    const name = interaction.options.getString("activity");
+    const type = interaction.options.getString("type") as ExcludeEnum<
+      typeof ActivityTypes,
+      "CUSTOM"
+    >;
     const url = interaction.options.getString("url");
+
     // Check if url is a youtube or twitch link
-    if (url) {
-      if (!(interaction.options.getString("type") === "streaming")) {
+    if (url !== undefined && url !== null) {
+      if (!(type === "STREAMING")) {
         interaction.reply({
           content: "Can only include a url if you are streaming!",
           ephemeral: true,
         });
         return;
+        // TODO buff this up lmao we need regex probably
       } else if (!(url.includes("youtube.com") || url.includes("twitch.tv"))) {
         interaction.reply({
-          content: "Invalid url! Include twitch or youtube link",
+          content: "Invalid url! Please include a twitch or youtube link",
           ephemeral: true,
         });
         return;
@@ -31,17 +37,10 @@ export const status: Command = {
     }
 
     try {
-      const output = client.user.setActivity({
-        name: interaction.options.getString("activity"),
-        type: interaction.options.getString("type"),
-        url: interaction.options.getString("url"),
-      });
-      log.debug(output);
+      log.info({ Activity: name, Type: type, url: url }, "Setting status");
+      client.user.setActivity({ name, type, url });
     } catch (e) {
-      log.error(
-        e,
-        `Error encountered at command execution: ${interaction.commandName} - ${interaction.message}`
-      );
+      log.error(e, "Failed to set activity");
     }
 
     interaction.reply({
@@ -49,7 +48,6 @@ export const status: Command = {
       ephemeral: true,
     });
   },
-  // Slash command builder contains the command name and description
   data: new SlashCommandBuilder()
     .setName("status")
     .setDescription("Change the status of the bot")

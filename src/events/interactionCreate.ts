@@ -1,38 +1,41 @@
-import { log } from "../utils/logger";
+import log from "../log";
+import client from "../main";
 import { Event } from "./interfaces";
 
-export const interactionCreate: Event = {
+export const event: Event = {
   name: "interactionCreate",
   once: false,
-  async execute(_commands, commandCollection, interaction) {
-    if (!interaction.isCommand()) {
-      log.trace(`Non-command interaction detected: ${interaction.message}`);
-      return;
-    }
+  execute: async (interaction) => {
+    if (!interaction.isCommand()) return;
 
-    const command = commandCollection.get(interaction.commandName);
+    const command = client.commands.get(interaction.commandName);
+
     if (!command) {
-      log.warn(
-        `Command not found: ${interaction.commandName} - ${interaction.message}`
-      );
-      return;
-    }
-
-    try {
-      await command.execute(interaction);
-      log.info(
-        `Command executed: ${interaction.commandName} - ${interaction.message}`
-      );
-    } catch (e) {
-      log.error(
-        e,
-        `Error encountered at command execution:${interaction.commandName} - ${interaction.message}`
-      );
-
-      await interaction.reply({
-        content: "Something went wrong!",
-        emphemeral: true,
+      log.warn(`Command not found: ${interaction.commandName}`);
+      log.debug({
+        Interaction: interaction.toJSON(),
+        Command: interaction.command.toJSON(),
       });
     }
+
+    log.info(
+      `${interaction.user.tag} executed ${interaction.commandName} in ${interaction.channelId}`
+    );
+
+    await command
+      .execute(interaction)
+      .then(() => {
+        log.debug(`Command ${interaction.commandName} executed successfully`);
+      })
+      .catch((e) => {
+        log.error(
+          { Error: e, Interaction: interaction.toJSON() },
+          "Encountered an error while execution a command"
+        );
+        interaction.reply({
+          content: "There was an error executing your command!",
+          ephemeral: true,
+        });
+      });
   },
 };

@@ -1,0 +1,4 @@
+{
+  "LOGGING_LEVEL": "info",
+  "LOG_DIR": "./logs"
+}

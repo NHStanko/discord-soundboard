@@ -1,7 +1,7 @@
+import config from "../config";
 import fs from "fs";
-import pino from "pino";
+import pino, { Logger } from "pino";
 import PinoPretty from "pino-pretty";
-import { config } from "./config";
 
 const logLevel: pino.Level =
   config.LOGGING_LEVEL === "trace"
@@ -33,10 +33,12 @@ const streams = [
   },
 ];
 
-export const log = pino(
+const log: Logger = pino(
   {
     level: logLevel,
     name: "discord-bot",
   },
   pino.multistream(streams)
 );
+
+export default log;

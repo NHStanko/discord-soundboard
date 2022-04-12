@@ -1,10 +1,8 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
+import { CommandInteraction } from "discord.js";
 
 export interface Command {
-  // Execute happens on the command
   name: string;
-  execute: (any) => Promise<void>;
-  // Slash command builder contains the command name and description,
-  // setup like 'new SlashCommandBuilder().setName("ping").setDescription("pong")'
+  execute: (interaction: CommandInteraction) => Promise<void>;
   data: Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">;
 }
