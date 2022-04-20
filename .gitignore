@@ -108,3 +108,4 @@ dist
 /config/token.env
 config/token.env
 token.env
+*.env
